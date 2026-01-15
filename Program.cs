@@ -39,6 +39,39 @@
                 card[i] = new Card(lines[i]);
             }
         }
+        public string checkUpperCard()
+        {
+            return card[0].ToString();
+        }
+        public string drawCard()
+        {
+            if (card.Length > 0)
+            {
+                string topCard = card[0].ToString();
+                Card[] newDeck = new Card[card.Length - 1];
+                for (int i = 1; i < card.Length; i++)
+                {
+                    newDeck[i - 1] = card[i];
+                }
+                card = newDeck;
+                return topCard;
+            }
+            else
+            {
+                return "-1";
+            }
+        }
+        void shuffle()
+        {
+            Random rand = new Random();
+            for (int i = 0; i < card.Length; i++)
+            {
+                int j = rand.Next(0, card.Length);
+                Card temp = card[i];
+                card[i] = card[j];
+                card[j] = temp;
+            }
+        }
         public override string ToString()
         {
             string deckString = "";
