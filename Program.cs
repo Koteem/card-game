@@ -1,5 +1,43 @@
 ﻿namespace proj
 {
+    class Game
+    {
+        private Player[] players;
+        private Deck gameDeck;
+        public Game(int playerAmount, Deck d)
+        {
+            players = new Player[playerAmount];
+            gameDeck = d;
+        }
+        public void start()
+        {
+            gameDeck.shuffle();
+            int i = 0;
+            while(gameDeck.checkUpperCard() != "-1")
+            { 
+                players[i].drawCard(gameDeck.drawCard());
+                i++;
+                if(i >= players.Length)
+                {
+                    i = 0;
+                }
+            }
+        }
+    }
+    class Player
+    {
+        private string name;
+        public Deck playerDeck;
+        public Player(string n, Deck d)
+        {
+            name = n;
+            playerDeck = d;
+        }
+        public void drawCard(string c)
+        {
+            playerDeck.addCard(c);
+        }
+    }
     class Deck
     {
         private Card [] card;
@@ -39,8 +77,23 @@
                 card[i] = new Card(lines[i]);
             }
         }
+        public void addCard(string c)
+        {
+            Card newCard = new Card(c);
+            Card[] newDeck = new Card[card.Length + 1];
+            for (int i = 0; i < card.Length; i++)
+            {
+                newDeck[i] = card[i];
+            }
+            newDeck[card.Length] = newCard;
+            card = newDeck;
+        }
         public string checkUpperCard()
         {
+            if(card.Length == 0)
+            {
+                return "-1";
+            }
             return card[0].ToString();
         }
         public string drawCard()
@@ -61,7 +114,7 @@
                 return "-1";
             }
         }
-        void shuffle()
+        public void shuffle()
         {
             Random rand = new Random();
             for (int i = 0; i < card.Length; i++)
