@@ -7,6 +7,10 @@
         public Game(int playerAmount, Deck d)
         {
             players = new Player[playerAmount];
+            for(int i = 0; i < playerAmount; i++)
+            {
+                players[i] = new Player("Player " + (i + 1), new Deck(0));
+            }
             gameDeck = d;
         }
         public void start()
@@ -14,8 +18,8 @@
             gameDeck.shuffle();
             int i = 0;
             while(gameDeck.checkUpperCard() != "-1")
-            { 
-                players[i].drawCard(gameDeck.drawCard());
+            {
+                players[i].drawCard(gameDeck.drawCard()); 
                 i++;
                 if(i >= players.Length)
                 {
@@ -23,10 +27,84 @@
                 }
             }
         }
+        public void playRound()
+        {
+            foreach (Player p in players)
+            {
+                Console.WriteLine(p.ToString());
+            }
+            int round = 1;
+            while (true)
+            {
+                Console.WriteLine("\n Round " + round + "\n");
+                round++;
+                int[] values = new int[players.Length];
+                for (int i = 0; i < players.Length; i++)
+                {
+                    string card = players[i].playerDeck.drawCard();
+                    if (card == "-1")
+                    {
+                        values[i] = -1;
+                    }
+                    else
+                    {
+                        string[] parts = card.Split(' ');
+                        values[i] = int.Parse(parts[1]);
+                        Console.WriteLine(players[i].name + " draws " + card);
+                    }
+                }
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (players[i].playerDeck.checkUpperCard() == "-1")
+                    {
+                        Console.WriteLine("\n" + players[i].name + " losses!");
+                        return;
+                    }
+                }
+                int maxValue = -1;
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] > maxValue)
+                    {
+                        maxValue = values[i];
+                    }
+                }
+                int howManyWinners = 0;
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] == maxValue)
+                    {
+                        howManyWinners++;
+                    }
+                }
+                if (howManyWinners == 1)
+                {
+                    for (int i = 0; i < values.Length; i++)
+                    {
+                        if (values[i] == maxValue)
+                        {
+                            Console.WriteLine(players[i].name + " wins the round!\n");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\n It's a tie between:");
+                    for (int i = 0; i < values.Length; i++)
+                    {
+                        if (values[i] == maxValue)
+                        {
+                            Console.WriteLine(players[i].name);
+                        }
+                    }
+                    Console.WriteLine();
+                }
+            }
+        }
     }
     class Player
     {
-        private string name;
+        public string name;
         public Deck playerDeck;
         public Player(string n, Deck d)
         {
@@ -36,6 +114,10 @@
         public void drawCard(string c)
         {
             playerDeck.addCard(c);
+        }
+        public override string ToString()
+        {
+            return name + "'s deck:\n" + playerDeck.ToString();
         }
     }
     class Deck
@@ -49,7 +131,7 @@
             char[] suits = { 'H', 'D', 'C', 'S' };
             for (int s = 0; s < suits.Length; s++)
             {
-                for (int v = 1; v <= 13; v++)
+                for (int v = 2; v <= 14; v++)
                 {
                     card[index] = new Card(suits[s] + " " + v);
                     index++;
@@ -64,7 +146,7 @@
             for (int i = 0; i < n; i++)
             {
                 char suit = suits[rand.Next(0, 4)];
-                int value = rand.Next(1, 14);
+                int value = rand.Next(2, 15);
                 card[i] = new Card(suit + " " + value);
             }
         }
@@ -100,7 +182,7 @@
         {
             if (card.Length > 0)
             {
-                string topCard = card[0].ToString();
+                string topCard = card[0].getCard();
                 Card[] newDeck = new Card[card.Length - 1];
                 for (int i = 1; i < card.Length; i++)
                 {
@@ -138,9 +220,9 @@
     class Card
     {
         private char suit; // H - hearts, D - diamonds, C - clubs, S - spades,
-        private int value; // A - 1, ..., J - 11, Q - 12, K - 13,
+        private int value; // 2 - 2, ..., J - 11, Q - 12, K - 13, A - 14
 
-        public Card(string n)//input like: H 10, D 1, S 12
+        public Card(string n)//input like: H 10, D 2, S 12
         {
             string[] x = n.Trim().Split(' ');
             suit = x[0][0];
@@ -149,17 +231,21 @@
             {
                 suit = 'S';
             }
-            if (value < 1 || value > 13)
+            if (value < 2 || value > 14)
             {
-                value = 1;
+                value = 2;
             }           
+        }
+        public string getCard()
+        {
+            return suit + " " + value;
         }
         public override string ToString()
         {
             string name = "";
             switch(value)
             {
-                case 1:
+                case 14:
                     name = "Ace";
                     break;
                 case 11:
@@ -198,8 +284,9 @@
     {
         static void Main(string[] args)
         {
-            Deck deck = new Deck();
-            Console.WriteLine(deck);
+            Game g = new Game(4, new Deck());
+            g.start();
+            g.playRound();
         }
     }
 }
