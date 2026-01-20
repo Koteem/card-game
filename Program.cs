@@ -77,27 +77,65 @@
                         howManyWinners++;
                     }
                 }
-                if (howManyWinners == 1)
+                while (howManyWinners > 1)
                 {
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        if (values[i] == maxValue)
-                        {
-                            Console.WriteLine(players[i].name + " wins the round!\n");
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("\n It's a tie between:");
+                    int[] tab = values;
+                    Console.WriteLine("\nIt's a tie between:");
                     for (int i = 0; i < values.Length; i++)
                     {
                         if (values[i] == maxValue)
                         {
                             Console.WriteLine(players[i].name);
                         }
+                        else
+                        {
+                            values[i] = 0;
+                        }
+                    }
+                    Console.WriteLine("Drawing again...\n");
+                    howManyWinners = 0;
+                    for (int i = 0; i < players.Length; i++)
+                    {
+                        if (values[i] == maxValue)
+                        {
+                            if (players[i].playerDeck.checkUpperCard() != "-1")
+                            {
+                                string[] parts = players[i].playerDeck.drawCard().Split(' ');
+                                tab[i] = int.Parse(parts[1]);
+                                Console.WriteLine(players[i].name + " draws " + parts[0] + " " + parts[1]);
+                            }
+                            if (players[i].playerDeck.checkUpperCard() != "-1") 
+                            { 
+                                string[] parts = players[i].playerDeck.drawCard().Split(' ');
+                                tab[i] = int.Parse(parts[1]);
+                                Console.WriteLine(players[i].name + " draws " + parts[0] + " " + parts[1]);
+                            }
+                        }
+                    }
+                    for (int i = 0; i < tab.Length; i++)
+                    {
+                        if (tab[i] > maxValue)
+                        {
+                            maxValue = tab[i];
+                        }
+                    }
+                    howManyWinners = 0;
+                    for (int i = 0; i < tab.Length; i++)
+                    {
+                        if (tab[i] == maxValue)
+                        {
+                            howManyWinners++;
+                        }
                     }
                     Console.WriteLine();
+                    values = tab;
+                }
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] == maxValue)
+                    {
+                        Console.WriteLine(players[i].name + " wins the round!\n");
+                    }
                 }
             }
         }
