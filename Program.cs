@@ -36,6 +36,7 @@
             int round = 1;
             while (true)
             {
+                Deck deck = new Deck(0);
                 Console.WriteLine("\n Round " + round + "\n");
                 round++;
                 int[] values = new int[players.Length];
@@ -48,6 +49,7 @@
                     }
                     else
                     {
+                        deck.addCard(card);
                         string[] parts = card.Split(' ');
                         values[i] = int.Parse(parts[1]);
                         Console.WriteLine(players[i].name + " draws " + card);
@@ -100,13 +102,17 @@
                         {
                             if (players[i].playerDeck.checkUpperCard() != "-1")
                             {
-                                string[] parts = players[i].playerDeck.drawCard().Split(' ');
+                                string t = players[i].playerDeck.drawCard();
+                                deck.addCard(t);
+                                string[] parts = t.Split(' ');
                                 tab[i] = int.Parse(parts[1]);
                                 Console.WriteLine(players[i].name + " draws " + parts[0] + " " + parts[1]);
                             }
                             if (players[i].playerDeck.checkUpperCard() != "-1") 
-                            { 
-                                string[] parts = players[i].playerDeck.drawCard().Split(' ');
+                            {
+                                string t = players[i].playerDeck.drawCard();
+                                deck.addCard(t);
+                                string[] parts = t.Split(' ');
                                 tab[i] = int.Parse(parts[1]);
                                 Console.WriteLine(players[i].name + " draws " + parts[0] + " " + parts[1]);
                             }
@@ -135,6 +141,10 @@
                     if (values[i] == maxValue)
                     {
                         Console.WriteLine(players[i].name + " wins the round!\n");
+                        while(deck.checkUpperCard() != "-1")
+                        {
+                            players[i].drawCard(deck.drawCard());
+                        }
                     }
                 }
             }
